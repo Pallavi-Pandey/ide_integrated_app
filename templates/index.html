@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Flask Python IDE</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/ace.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.3/socket.io.js"></script>
+</head>
+<body>
+
+<h1>Flask Python IDE</h1>
+
+<div>
+    <h2>Write your Python code below:</h2>
+    <div id="editor" style="height: 300px;"></div>
+    <button onclick="runCode()">Run Code</button>
+</div>
+
+<div>
+    <h2>Output:</h2>
+    <pre id="output"></pre>
+    <textarea id="userInput" placeholder="Enter input here"></textarea>
+</div>
+
+<script>
+    var editor = ace.edit("editor");
+    editor.setTheme("ace/theme/twilight");
+    editor.session.setMode("ace/mode/python");
+
+    var socket = io.connect('http://' + document.domain + ':' + location.port);
+
+    function runCode() {
+        var code = editor.getValue();
+        var userInput = document.getElementById('userInput').value;
+
+        // Pass both script and user input to the server
+        socket.emit('run_code', {'code': code, 'input': userInput});
+    }
+
+    socket.on('output', function(data) {
+        document.getElementById('output').innerText = data.output;
+    });
+</script>
+
+</body>
+</html>
